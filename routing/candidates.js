@@ -20,7 +20,10 @@ router.post('/', async (request, response) => {
 // Read all candidates
 router.get('/', async (request, response) => {
 	try {
-		const filter = request.query.stage ? { applicationStage: request.query.stage } : {};
+		const filter = {};
+		if (request.query.stage) filter.applicationStage = request.query.stage;
+		if (request.query.name) filter.name = new RegExp(request.query.name, 'i');
+
 		const readCandidates = await Candidate.find(filter);
 		response.json(readCandidates);
 
