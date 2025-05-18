@@ -2,10 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Candidate = require("../candidate");
 
-// data storaged in memory
-let memoryCandidates = [];
-let memoryIdCounter = 1;
-
 // Create a candidate
 router.post('/', async (request, response) => {
 	try {
