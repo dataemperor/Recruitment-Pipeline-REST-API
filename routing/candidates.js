@@ -1,48 +1,67 @@
 const express = require('express');
 const router = express.Router();
+const Candidate = require("../Candidate");
 
 // data storaged in memory
 let memoryCandidates = [];
 let memoryIdCounter = 1;
 
 // Create a candidate
-router.post('/', (request, response) => {
-	const candidate = { id: memoryIdCounter++, ...request.body };
-	memoryCandidates.push(candidate);
-	response.status(201).json(candidate);
+router.post('/', async (request, response) => {
+	try {
+		const candidate = new Candidate(request.body);
+		await candidate.save();
+		response.status(201).json(candidate);
+	} catch (err) {
+		response.status(400).json({ error: err.message });
+	}
 });
 
 // Read all candidates
-router.get('/', (request, response) => {
-	const { stage } = request.query;
-	const filtered = stage ? memoryCandidates.filter(candidate => candidate.applicationStage === stage) : memoryCandidates;
-	response.json(filtered);
+router.get('/', async (request, response) => {
+	try {
+		const filter = request.query.stage ? { applicationStage: request.query.stage } : {};
+		const readCandidates = await Candidate.find(filter);
+		response.json(readCandidates);
+
+	} catch (err) {
+		response.status(500).json({ error: err.message });
+	}
 });
 
 // Read a single candidate
-router.get("/:id", (request, response) => {
-	const candidate = memoryCandidates.find(candidate => candidate.id == request.params.id);
-	if (!candidate) return response.status(404).json({ message: 'Candidate not found in database' });
-	response.json(candidate);
-})
+router.get("/:id", async (request, response) => {
+	try {
+		const readCandidate = await Candidate.findById(request.params.id);
+		if (!readCandidate) return response.status(404).json({ message: 'Candidte not found in database' });
+		response.json(readCandidate);
+
+	} catch (err) {
+		response.status(500).json({ error: err.message });
+	}
+});
 
 // Update all candidate details
-router.put("/:id", (request, response) => {
-	const index = memoryCandidates.findIndex(candidate => candidate.id == request.params.id);
-	if (index === -1) return response.status(404).json({ message: 'Candidate not found' });
-
-	memoryCandidates[index] = { ...memoryCandidates[index], ...request.body };
-	response.json(memoryCandidates[index]);
+router.put("/:id", async (request, response) => {
+	try {
+		const updateCandidate = await Candidate.findByIdAndUpdate(request.params.id, request.body, { new: true });
+		if (!updateCandidate) return response.status(404).json({ message: 'Candidate not found' });
+		response.json(updateCandidate);
+	} catch (err) {
+		response.status(400).json({ error: err.message });
+	}
 });
 
 
 // Delete a cadidate
-router.delete("/:id", (request, response) => {
-	const index = memoryCandidates.findIndex(candidate => candidate.id == request.params.id);
-	if (index === -1) return response.status(404).json({ message: 'Candidate not found' });
-
-	const deleted = memoryCandidates.splice(index, 1);
-	response.json(deleted[0]);
+router.delete("/:id", async (request, response) => {
+	try {
+		const deleteCandidate = await Candidate.findByIdAndDelete(request.params.id);
+		if (!deleteCandidate) return response.status(404).json({ message: 'Candidate not found' });
+		response.json(deleteCandidate);
+	} catch (err) {
+		response.status(500).json({ error: err.message });
+	}
 });
 
 module.exports = router;
