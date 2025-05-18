@@ -36,7 +36,7 @@ router.get('/', async (request, response) => {
 router.get("/:id", async (request, response) => {
 	try {
 		const readCandidate = await Candidate.findById(request.params.id);
-		if (!readCandidate) return response.status(404).json({ message: 'Candidte not found in database' });
+		if (!readCandidate) return response.status(404).json({ message: 'Candidate not found in database' });
 		response.json(readCandidate);
 
 	} catch (err) {
