@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Candidate = require("../Candidate");
+const Candidate = require("../candidate");
 
 // data storaged in memory
 let memoryCandidates = [];
