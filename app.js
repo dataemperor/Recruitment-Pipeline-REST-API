@@ -7,9 +7,9 @@ app.use(express.json());
 app.use('/candidates', candidateRoutes); // route for the candidate endpoint
 
 const PORT = 3000;
-const DATABASE_URI = "mongodb://localhost:5000/recruitment-pipeline";
+const DATABASE_URI = "mongodb://localhost:27017/recruitment-pipeline";
 
-mongoose.connect(DATABASE_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+mongoose.connect(DATABASE_URI).then(() => {
 	console.log('App connected to MongoDB');
 
 	app.listen(PORT, () => {
